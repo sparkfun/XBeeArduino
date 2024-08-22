@@ -1,0 +1,5 @@
+# Original line for compiling C files
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" -c {compiler.c.flags} {compiler.c.extra_flags} {build.extra_flags} {build.flags.c} {build.flags.optimize} {build.flags.cpu} {build.flags.common} {includes} "{source_file}" -o "{object_file}"
+
+# Modified line to exclude `examples` directory
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" -c {compiler.c.flags} {compiler.c.extra_flags} {build.extra_flags} {build.flags.c} {build.flags.optimize} {build.flags.cpu} {build.flags.common} {includes} "{source_file}" -o "{object_file}" || [[ ! -e examples/* ]]

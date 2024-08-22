@@ -1,13 +1,17 @@
+#include "XBeeArduino.h"
+#include "xbee.h"
+#include "port.h"
+
 /**
  * @file XBeeArduino.cpp
  * @brief Implementation of the XBeeArduino class for Arduino-compatible XBee modules.
  * 
  * This file contains the implementation of the XBeeArduino class, which provides an interface 
- * for interacting with both standard and LoRaWAN XBee modules on an Arduino platform.
+ * for interacting with XBee modules on an Arduino platform.
  * 
  * @version 1.0
  * @date 2024-08-17
- * @author Felix Galindo
+ * author Felix Galindo
  * 
  * @license MIT
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,89 +33,165 @@
  * SOFTWARE.
  */
 
-#include "XBeeArduino.h"
-#include "port_arduino.h"
+XBeeArduino* XBeeArduino::instance_ = nullptr;
 
-XBeeArduino::XBeeArduino(HardwareSerial* serialPort, uint32_t baudrate, XBeeModuleType moduleType, void (*onReceiveCallback)(XBeeLRPacket_t*))
-    : serialPort_(serialPort), moduleType_(moduleType), xbee_(nullptr),baudRate_(baudrate) {
+/**
+ * @brief Constructor for XBeeArduino class.
+ * 
+ * Initializes the XBee module based on the type and sets up callbacks and UART communication.
+ * 
+ * @param serialPort A pointer to a Stream object (HardwareSerial or SoftwareSerial).
+ * @param baudrate The baud rate for UART communication.
+ * @param moduleType The type of XBee module (standard or LoRa).
+ * @param onReceiveCallback A callback function to handle received data.
+ * @param onSendCallback A callback function to handle post-send events.
+ */
+XBeeArduino::XBeeArduino(Stream* serialPort, uint32_t baudrate, XBeeModuleType moduleType,
+                         void (*onReceiveCallback)(void*),
+                         void (*onSendCallback)(void*))
+    : serialPort_(serialPort), moduleType_(moduleType), xbee_(nullptr), baudRate_(baudrate),
+      onReceiveCallback_(onReceiveCallback), onSendCallback_(onSendCallback) {
 
     if (moduleType_ == XBEE_STANDARD) {
+        // Initialization for standard XBee modules
     } else if (moduleType_ == XBEE_LORA) {
-        ctable_ = {
-            .OnReceiveCallback = onReceiveCallback, 
-            .OnSendCallback = NULL, //can be left as all NULL if no callbacks needed
-        };
-        htable_ = {
-            .PortUartRead = portUartRead,
-            .PortUartWrite = portUartWrite,
-            .PortMillis = portMillis,
-            .PortFlushRx = portFlushRx,
-            .PortUartInit = portUartInit,
-            .PortDelay = portDelay,
-        };
-        xbee_ = XBeeLRCreate(&ctable_,&htable_);
+        instance_ = this;
+        ctable_.OnReceiveCallback = onReceiveWrapper, 
+        ctable_.OnSendCallback = onSendWrapper, 
+        htable_.PortUartRead = portUartRead,
+        htable_.PortUartWrite = portUartWrite,
+        htable_.PortMillis = portMillis,
+        htable_.PortFlushRx = portFlushRx,
+        htable_.PortUartInit = portUartInit,
+        htable_.PortDelay = portDelay,
+
+        xbee_ = (XBee*)XBeeLRCreate(&ctable_, &htable_);
     }
 }
 
+/**
+ * @brief Destructor for XBeeArduino class.
+ * 
+ * Ensures proper disconnection and cleanup of the XBee module.
+ */
 XBeeArduino::~XBeeArduino() {
     if (xbee_ != nullptr) {
-        xbeeDisconnect(xbee_);
+        XBeeDisconnect(xbee_);
         delete xbee_;  // Free the memory allocated for the XBee structure
     }
 }
 
+/**
+ * @brief Initializes the XBee module.
+ * @return True if initialization is successful, otherwise false.
+ */
 bool XBeeArduino::begin() {
-    return portUartInit(baudrate, serialPort_) == 0; 
+    return portUartInit(baudRate_, serialPort_) == 0;  // Corrected baudRate_ reference
 }
 
+/**
+ * @brief Connects the XBee module to the network.
+ * @return True if the connection is successful, otherwise false.
+ */
 bool XBeeArduino::connect() {
-    return XbeeConnect(xbee_) == 0;
     if (xbee_ != nullptr) {
-        return XbeeConnect(xbee_) == 0;
+        return XBeeConnect(xbee_);
     }
     return false;
 }
 
+/**
+ * @brief Lets the XBee class process 
+ * @return void
+ */
+void XBeeArduino::process() {
+    if (xbee_ != nullptr) {
+        XBeeProcess(xbee_);
+    }
+}
+
+/**
+ * @brief Disconnects the XBee module from the network.
+ * @return True if disconnection is successful, otherwise false.
+ */
 bool XBeeArduino::disconnect() {
     if (xbee_ != nullptr) {
-        return xbeeDisconnect(xbee_) == 0;
+        return XBeeDisconnect(xbee_);
     }
+    return false;  // Added a return statement here
 }
 
-bool XBeeArduino::sendData(const uint8_t* data, size_t length) {
-    if (moduleType_ == XBEE_STANDARD) {
-        return xbeeSendData(xbee_, data, length) == 0;
-    } else if (moduleType_ == XBEE_LORA) {
-        return xbeeLRSendData(xbee_, data, length) == 0;
+/**
+ * @brief Sends data through the XBee module.
+ * @param data The data to be sent.
+ * @return True if the data is sent successfully, otherwise false.
+ */
+template <typename T>
+bool XBeeArduino::sendData(const T& data) {
+    // if (moduleType_ == XBEE_STANDARD) {
+    //return XBeeSendData(xbee_, data, length) == 0;
+    // } else 
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeSendData(xbee_, &data) == 0;
     }
-    return false;
+    //return false;
 }
 
+// Explicit template instantiation for XBeeLRPacket_s
+template bool XBeeArduino::sendData<XBeeLRPacket_s>(const XBeeLRPacket_s&);
+
+/**
+ * @brief Checks if the XBee module is connected to the network.
+ * @return True if the module is connected, otherwise false.
+ */
 bool XBeeArduino::isConnected() {
     if (xbee_ != nullptr) {
-        return XbeeConnected(xbee_) ;
+        return XBeeConnected(xbee_);
     }
     return false;
 }
 
+/**
+ * @brief Resets the XBee module.
+ */
 void XBeeArduino::reset() {
-    if (moduleType_ == XBEE_STANDARD) {
-        xbeeHardReset(xbee_);
-    } else if (moduleType_ == XBEE_LORA) {
-        xbeeLRHardReset(xbee_);
+    if (xbee_ != nullptr) {
+        return XBeeHardReset(xbee_);
     }
 }
 
-bool XBeeArduino::setLoRaApiOptions(uint8_t options) {
+/**
+ * @brief Sets the API options for LoRaWAN communication.
+ * @param options The API options to set.
+ * @return True if the options are set successfully, otherwise false.
+ */
+bool XBeeArduino::setLoRaApiOptions(const uint8_t options) {
     if (moduleType_ == XBEE_LORA) {
-        return xbeeLRSetApiOptions(xbee_, options) == 0;
+        return XBeeSetAPIOptions(xbee_, options);
     }
     return false;
 }
 
-bool XBeeArduino::getLoRaDevEUI(uint8_t* devEUI) {
+/**
+ * @brief Retrieves the DevEUI of the LoRaWAN XBee module.
+ * @param devEUI A pointer to a buffer where the DevEUI will be stored.
+ * @return True if the DevEUI is retrieved successfully, otherwise false.
+ */
+bool XBeeArduino::getLoRaDevEUI(uint8_t* devEUI, uint8_t length) {
     if (moduleType_ == XBEE_LORA) {
-        return xbeeLRGetDevEUI(xbee_, devEUI) == 0;
+        return XBeeLRGetDevEUI(xbee_, devEUI, length);
     }
     return false;
+}
+
+void XBeeArduino::onReceiveWrapper(XBee* xbee, void* data) {
+    if (instance_ && instance_->onReceiveCallback_) {
+        instance_->onReceiveCallback_(data);  // Forward the call to the original callback
+    }
+}
+
+void XBeeArduino::onSendWrapper(XBee* xbee, void* data) {
+    if (instance_ && instance_->onSendCallback_) {
+        instance_->onSendCallback_(data);  // Forward the call to the original callback
+    }
 }

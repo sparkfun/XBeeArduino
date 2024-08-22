@@ -8,7 +8,7 @@
  * 
  * @version 1.0
  * @date 2024-08-17
- * @author Felix Galindo
+ * author Felix Galindo
  * 
  * @license MIT
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,9 +31,20 @@
  */
 
 #include <XBeeArduino.h>
+#include <stdarg.h> // Use C-style header instead of C++ <cstdarg>
+#ifndef HAVE_HWSERIAL1
+//#include <SoftwareSerial.h>
+#endif
 
-// Global instance of XBeeArduino for LoRaWAN
-XBeeArduino xbee(&Serial1, 9600, XBEE_LORA, OnReceiveCallback, OnSendCallback);
+// Pin definitions for SoftwareSerial
+const int RX_PIN = 10;
+const int TX_PIN = 11;
+
+// Declare a pointer for the serial port
+Stream* serialPort;
+
+// Declare XBeeArduino instance
+XBeeArduino* xbee;
 
 // XBeeLR payload to send
 uint8_t examplePayload[] = {0xC0, 0xC0, 0xC0, 0xFF, 0xEE};
@@ -46,9 +57,10 @@ XBeeLRPacket_t packet;
  * This function is called when the XBee module receives data. It processes the 
  * incoming data, extracts relevant information, and handles it accordingly.
  * 
- * @param[in] packet Pointer to the received packet data.
+ * @param[in] data Pointer to the received packet data.
  */
-void OnReceiveCallback(XBeeLRPacket_t* packet) {
+void OnReceiveCallback(void* data) {
+    XBeeLRPacket_t* packet = (XBeeLRPacket_t*)data;
     Serial.print("Received Packet: ");
     for (int i = 1; i < packet->payloadSize; i++) {
         Serial.print(packet->payload[i], HEX);
@@ -74,9 +86,10 @@ void OnReceiveCallback(XBeeLRPacket_t* packet) {
  * any post-send operations, such as logging the transmission status or updating 
  * the state of the application.
  * 
- * @param[in] packet Pointer to the sent packet data.
+ * @param[in] data Pointer to the sent packet data.
  */
-void OnSendCallback(XBeeLRPacket_t* packet) {
+void OnSendCallback(void* data) {
+    XBeeLRPacket_t* packet = (XBeeLRPacket_t*)data;
     switch (packet->status) {
         case 0:
             Serial.print("Send successful (frameId: 0x");
@@ -106,20 +119,27 @@ void OnSendCallback(XBeeLRPacket_t* packet) {
 void setup() {
     // Initialize the Arduino Serial port for debugging
     Serial.begin(9600);
+    serialPort = &Serial1;
+// #else
+//     // Otherwise, use SoftwareSerial
+//     mySerial->begin(9600);
+//     serialPort = mySerial;
+// #endif
 
     // Initialize the XBee module
-    if (!xbee.begin()) {
+    xbee = new XBeeArduino(serialPort, 9600, XBEE_LORA, OnReceiveCallback, OnSendCallback);
+    if (!xbee->begin()) {
         Serial.println("Failed to initialize XBee");
         while (1); // Halt the program on failure
     }
 
     // Read LoRaWAN DevEUI and print
-    uint8_t devEui[8];
-    if (xbee.getLoRaDevEUI(devEui)) {
+    uint8_t devEui[17];
+    if (xbee->getLoRaDevEUI(devEui,sizeof(devEui))){
         Serial.print("DEVEUI: ");
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 17; i++) {
             Serial.print(devEui[i], HEX);
-            if (i < 7) Serial.print(":");
+            if (i < 16) Serial.print(":");
         }
         Serial.println();
     } else {
@@ -128,11 +148,11 @@ void setup() {
 
     // Set LoRaWAN Network Settings
     Serial.println("Configuring...");
-    xbee.setLoRaApiOptions(0x01); // Example API option
+    xbee->setLoRaApiOptions(0x01); // Example API option
 
     // Connect to LoRaWAN network
     Serial.println("Connecting...");
-    if (!xbee.connect()) {
+    if (!xbee->connect()) {
         Serial.println("Failed to connect.");
         while (1); // Halt the program on failure
     } else {
@@ -152,24 +172,24 @@ void loop() {
     static uint32_t startTime = millis();
     if (millis() - startTime >= 10000) {
         // Send data if connected, else reconnect
-        if (xbee.isConnected()) {
+        if (xbee->isConnected()) {
             Serial.print("Sending 0x");
             for (int i = 0; i < payloadLen; i++) {
                 Serial.print(examplePayload[i], HEX);
             }
             Serial.println();
 
-            if (!xbee.sendData(packet.payload, packet.payloadSize)) {
-                Serial.println("Failed to send data.");
-            } else {
-                Serial.println("Data sent successfully.");
-            }
+            // if (!xbee->sendData(packet.payload, packet.payloadSize)) {
+            //     Serial.println("Failed to send data.");
+            // } else {
+            //     Serial.println("Data sent successfully.");
+            // }
 
             // Update payload
             packet.payload[0] = packet.payload[0] + 1; // change payload
         } else {
             Serial.println("Not connected. Connecting...");
-            if (!xbee.connect()) {
+            if (!xbee->connect()) {
                 Serial.println("Failed to connect.");
             } else {
                 Serial.println("Connected!");
