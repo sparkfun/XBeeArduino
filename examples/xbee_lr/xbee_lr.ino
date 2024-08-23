@@ -146,7 +146,6 @@ void setup() {
     Serial.println("Connecting...");
     if (!xbee->connect()) {
         Serial.println("Failed to connect.");
-        while (1); // Halt the program on failure
     } else {
         Serial.println("Connected!");
     }
