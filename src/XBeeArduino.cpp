@@ -161,25 +161,13 @@ void XBeeArduino::reset() {
 }
 
 /**
- * @brief Sets the API options for LoRaWAN communication.
+ * @brief Sets the API options for XBee.
  * @param options The API options to set.
  * @return True if the options are set successfully, otherwise false.
  */
-bool XBeeArduino::setLoRaApiOptions(const uint8_t options) {
+bool XBeeArduino::setApiOptions(const uint8_t options) {
     if (moduleType_ == XBEE_LORA) {
         return XBeeSetAPIOptions(xbee_, options);
-    }
-    return false;
-}
-
-/**
- * @brief Retrieves the DevEUI of the LoRaWAN XBee module.
- * @param devEUI A pointer to a buffer where the DevEUI will be stored.
- * @return True if the DevEUI is retrieved successfully, otherwise false.
- */
-bool XBeeArduino::getLoRaDevEUI(uint8_t* devEUI, uint8_t length) {
-    if (moduleType_ == XBEE_LORA) {
-        return XBeeLRGetDevEUI(xbee_, devEUI, length);
     }
     return false;
 }
@@ -194,4 +182,70 @@ void XBeeArduino::onSendWrapper(XBee* xbee, void* data) {
     if (instance_ && instance_->onSendCallback_) {
         instance_->onSendCallback_(data);  // Forward the call to the original callback
     }
+}
+
+/**
+ * @brief Applys config changes on XBee
+ * @return True if the changes are applied successfully, otherwise false.
+ */
+bool XBeeArduino::applyChanges(void) {
+
+    return XBeeApplyChanges(xbee_);
+}
+
+/**
+ * @brief Write config on XBee
+ * @return True if the write config is successfull, otherwise false.
+ */
+bool XBeeArduino::writeConfig(void) {
+
+    return XBeeWriteConfig(xbee_);
+}
+
+/**
+ * @brief Sets the App EUI of the LoRaWAN XBee module.
+ * @param value A pointer to a buffer where the App EUI will be stored.
+ * @return True if the AppEUI is set successfully, otherwise false.
+ */
+bool XBeeArduino::setLoRaAppEUI(const char* value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetAppEUI(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Sets the App Key of the LoRaWAN XBee module.
+ * @param value A pointer to a buffer where the App Key will be stored.
+ * @return True if the App Key is set successfully, otherwise false.
+ */
+bool XBeeArduino::setLoRaAppKey(const char* value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetAppKey(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Sets the App Key of the LoRaWAN XBee module.
+ * @param value A pointer to a buffer where the App Key will be stored.
+ * @return True if the App Key is set successfully, otherwise false.
+ */
+bool XBeeArduino::setLoRaNwkKey(const char* value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetNwkKey(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Retrieves the DevEUI of the LoRaWAN XBee module.
+ * @param devEUI A pointer to a buffer where the DevEUI will be stored.
+ * @return True if the DevEUI is retrieved successfully, otherwise false.
+ */
+bool XBeeArduino::getLoRaDevEUI(uint8_t* devEUI, uint8_t length) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRGetDevEUI(xbee_, devEUI, length);
+    }
+    return false;
 }

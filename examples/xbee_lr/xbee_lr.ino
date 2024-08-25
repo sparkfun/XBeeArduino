@@ -31,6 +31,12 @@
  */
 
 #include <XBeeArduino.h>
+#include <config.h>
+#include <port.h>
+#include <xbee.h>
+#include <xbee_api_frames.h>
+#include <xbee_at_cmds.h>
+#include <xbee_lr.h>
 #include <stdarg.h> // Use C-style header instead of C++ <cstdarg>
 
 // Declare a pointer for the serial port
@@ -140,7 +146,12 @@ void setup() {
 
     // Set LoRaWAN Network Settings
     Serial.println("Configuring...");
-    xbee->setLoRaApiOptions(0x01); // Example API option
+    xbee->setLoRaAppEUI("37D56A3F6CDCF0A5");
+    xbee->setLoRaAppKey("CD32AAB41C54175E9060D86F3A8B7F48");
+    xbee->setLoRaNwkKey("CD32AAB41C54175E9060D86F3A8B7F48");
+    xbee->setApiOptions(0x01);
+    xbee->writeConfig();
+    xbee->applyChanges();
 
     // Connect to LoRaWAN network
     Serial.println("Connecting...");

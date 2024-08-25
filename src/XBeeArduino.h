@@ -118,11 +118,11 @@ public:
     void reset();
 
     /**
-     * @brief Sets the API options for LoRaWAN communication.
+     * @brief Sets the API options for XBee.
      * @param options The API options to set.
      * @return True if the options are set successfully, otherwise false.
      */
-    bool setLoRaApiOptions(const uint8_t options);
+    bool setApiOptions(const uint8_t options);
 
     /**
      * @brief Retrieves the DevEUI of the LoRaWAN XBee module.
@@ -130,6 +130,38 @@ public:
      * @return True if the DevEUI is retrieved successfully, otherwise false.
      */
     bool getLoRaDevEUI(uint8_t* devEUI, uint8_t length);
+
+    /**
+     * @brief Sets the App EUI of the LoRaWAN XBee module.
+     * @param value A pointer to a buffer where the App EUI will be stored.
+     * @return True if the AppEUI is set successfully, otherwise false.
+     */
+    bool setLoRaAppEUI(const char* value);
+
+    /**
+     * @brief Sets the App Key of the LoRaWAN XBee module.
+     * @param value A pointer to a buffer where the App Key will be stored.
+     * @return True if the App Key is set successfully, otherwise false.
+     */
+    bool setLoRaAppKey(const char* value);
+
+    /**
+     * @brief Sets the App Key of the LoRaWAN XBee module.
+     * @param value A pointer to a buffer where the App Key will be stored.
+     * @return True if the App Key is set successfully, otherwise false.
+     */
+    bool setLoRaNwkKey(const char* value);
+
+    /**
+     * @brief Applys config changes on XBee
+     * @return True if the changes are applied successfully, otherwise false.
+     */
+    bool applyChanges(void);
+    /**
+     * @brief Write config on XBee
+     * @return True if the write config is successfull, otherwise false.
+     */
+    bool writeConfig(void);
 
 private:
     Stream* serialPort_; ///< Pointer to the serial port (HardwareSerial or SoftwareSerial)
