@@ -136,7 +136,7 @@ void setup() {
 
     // Read LoRaWAN DevEUI and print
     uint8_t devEui[17];
-    if (xbee->getLoRaDevEUI(devEui,sizeof(devEui))){
+    if (xbee->getLoRaWANDevEUI(devEui,sizeof(devEui))){
       Serial.print("DEVEUI: ");
       Serial.print((char*)devEui);
     Serial.println();
@@ -146,9 +146,10 @@ void setup() {
 
     // Set LoRaWAN Network Settings
     Serial.println("Configuring...");
-    xbee->setLoRaAppEUI("37D56A3F6CDCF0A5");
-    xbee->setLoRaAppKey("CD32AAB41C54175E9060D86F3A8B7F48");
-    xbee->setLoRaNwkKey("CD32AAB41C54175E9060D86F3A8B7F48");
+    xbee->setLoRaWANAppEUI("37D56A3F6CDCF0A5");
+    xbee->setLoRaWANAppKey("CD32AAB41C54175E9060D86F3A8B7F48");
+    xbee->setLoRaWANNwkKey("CD32AAB41C54175E9060D86F3A8B7F48");
+    xbee->setLoRaWANClass('C');
     xbee->setApiOptions(0x01);
     xbee->writeConfig();
     xbee->applyChanges();

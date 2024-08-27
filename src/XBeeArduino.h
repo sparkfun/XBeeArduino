@@ -129,28 +129,28 @@ public:
      * @param devEUI A pointer to a buffer where the DevEUI will be stored.
      * @return True if the DevEUI is retrieved successfully, otherwise false.
      */
-    bool getLoRaDevEUI(uint8_t* devEUI, uint8_t length);
+    bool getLoRaWANDevEUI(uint8_t* devEUI, uint8_t length);
 
     /**
      * @brief Sets the App EUI of the LoRaWAN XBee module.
      * @param value A pointer to a buffer where the App EUI will be stored.
      * @return True if the AppEUI is set successfully, otherwise false.
      */
-    bool setLoRaAppEUI(const char* value);
+    bool setLoRaWANAppEUI(const char* value);
 
     /**
      * @brief Sets the App Key of the LoRaWAN XBee module.
      * @param value A pointer to a buffer where the App Key will be stored.
      * @return True if the App Key is set successfully, otherwise false.
      */
-    bool setLoRaAppKey(const char* value);
+    bool setLoRaWANAppKey(const char* value);
 
     /**
      * @brief Sets the App Key of the LoRaWAN XBee module.
      * @param value A pointer to a buffer where the App Key will be stored.
      * @return True if the App Key is set successfully, otherwise false.
      */
-    bool setLoRaNwkKey(const char* value);
+    bool setLoRaWANNwkKey(const char* value);
 
     /**
      * @brief Applys config changes on XBee
@@ -162,6 +162,175 @@ public:
      * @return True if the write config is successfull, otherwise false.
      */
     bool writeConfig(void);
+
+    /**
+     * @brief Sets the LoRaWAN Class on the XBee LR module.
+     * 
+     * This function sends the AT_LC command to set the LoRaWAN Class 
+     * (e.g., 'A', 'B', 'C') on the XBee LR module.
+     * 
+     * @param[in] value The LoRaWAN Class to be set ('A', 'B', or 'C').
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANClass(const char value);
+
+    /**
+     * @brief Sets the LoRaWAN Activation Mode on the XBee LR module.
+     * 
+     * This function sends the AT_AM command to set the Activation Mode 
+     * (e.g., OTAA or ABP) on the XBee LR module.
+     * 
+     * @param[in] value The Activation Mode to be set.
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANActivationMode(const uint8_t value);
+
+    /**
+     * @brief Sets the LoRaWAN Adaptive Data Rate (ADR) on the XBee LR module.
+     * 
+     * This function sends the AT_AD command to enable or disable the 
+     * Adaptive Data Rate (ADR) feature on the XBee LR module.
+     * 
+     * @param[in] value The ADR setting to be set (e.g., 0 for disable, 1 for enable).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANADR(const uint8_t value);
+
+    /**
+     * @brief Sets the LoRaWAN Data Rate on the XBee LR module.
+     * 
+     * This function sends the AT_DR command to set the Data Rate 
+     * on the XBee LR module.
+     * 
+     * @param[in] value The Data Rate to be set.
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANDataRate(const uint8_t value);
+
+    /**
+     * @brief Sets the LoRaWAN Region on the XBee LR module.
+     * 
+     * This function sends the AT_LR command to set the operational region 
+     * (e.g., US915, EU868) on the XBee LR module.
+     * 
+     * @param[in] value The Region to be set.
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANRegion(const uint8_t value);
+
+    /**
+     * @brief Sets the LoRaWAN Duty Cycle on the XBee LR module.
+     * 
+     * This function sends the AT_DC command to configure the duty cycle 
+     * settings on the XBee LR module.
+     * 
+     * @param[in] value The Duty Cycle to be set.
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANDutyCycle(const uint8_t value);
+
+    /**
+     * @brief Gets the LoRaWAN Specification Version from the XBee LR module.
+     * 
+     * This function sends the AT_LV command to retrieve the LoRaWAN 
+     * Specification Version currently in use by the XBee LR module.
+     * 
+     * @param[out] responseBuffer Buffer to store the retrieved version string.
+     * @param[in] buffer_size The size of the response buffer.
+     * 
+     * @return bool Returns true if the command was successfully sent and a valid response was received, otherwise false.
+     */
+    bool getLoRaWANSpecVersion(char* responseBuffer, uint8_t buffer_size);
+
+    /**
+     * @brief Sets the LoRaWAN Join RX1 Delay on the XBee LR module.
+     * 
+     * This function sends the AT_J1 command to set the RX1 delay 
+     * (in milliseconds) for the Join Accept message on the XBee LR module.
+     * 
+     * @param[in] value The RX1 Delay value to be set (in milliseconds).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANJoinRX1Delay(const uint32_t value);
+
+    /**
+     * @brief Sets the LoRaWAN Join RX2 Delay on the XBee LR module.
+     * 
+     * This function sends the AT_J2 command to set the RX2 delay 
+     * (in milliseconds) for the Join Accept message on the XBee LR module.
+     * 
+     * @param[in] value The RX2 Delay value to be set (in milliseconds).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANJoinRX2Delay(const uint32_t value);
+
+    /**
+     * @brief Sets the LoRaWAN RX1 Delay on the XBee LR module.
+     * 
+     * This function sends the AT_D1 command to set the RX1 delay 
+     * (in milliseconds) on the XBee LR module.
+     * 
+     * @param[in] value The RX1 Delay value to be set (in milliseconds).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANRX1Delay(const uint32_t value);
+
+    /**
+     * @brief Sets the LoRaWAN RX2 Delay on the XBee LR module.
+     * 
+     * This function sends the AT_D2 command to set the RX2 delay 
+     * (in milliseconds) on the XBee LR module.
+     * 
+     * @param[in] value The RX2 Delay value to be set (in milliseconds).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANRX2Delay(const uint32_t value);
+
+    /**
+     * @brief Sets the LoRaWAN RX2 Data Rate on the XBee LR module.
+     * 
+     * This function sends the AT_XD command to set the RX2 Data Rate 
+     * on the XBee LR module.
+     * 
+     * @param[in] value The RX2 Data Rate to be set.
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANRX2DataRate(const uint8_t value);
+
+    /**
+     * @brief Sets the LoRaWAN RX2 Frequency on the XBee LR module.
+     * 
+     * This function sends the AT_XF command to set the RX2 Frequency 
+     * on the XBee LR module.
+     * 
+     * @param[in] value The RX2 Frequency to be set (in Hz).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANRX2Frequency(const uint32_t value);
+
+    /**
+     * @brief Sets the LoRaWAN Transmit Power on the XBee LR module.
+     * 
+     * This function sends the AT_PO command to set the transmit power 
+     * level on the XBee LR module.
+     * 
+     * @param[in] value The Transmit Power value to be set (in dBm).
+     * 
+     * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+     */
+    bool setLoRaWANTransmitPower(const uint8_t value);
 
 private:
     Stream* serialPort_; ///< Pointer to the serial port (HardwareSerial or SoftwareSerial)

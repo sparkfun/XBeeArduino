@@ -207,7 +207,7 @@ bool XBeeArduino::writeConfig(void) {
  * @param value A pointer to a buffer where the App EUI will be stored.
  * @return True if the AppEUI is set successfully, otherwise false.
  */
-bool XBeeArduino::setLoRaAppEUI(const char* value) {
+bool XBeeArduino::setLoRaWANAppEUI(const char* value) {
     if (moduleType_ == XBEE_LORA) {
         return XBeeLRSetAppEUI(xbee_, value);
     }
@@ -219,7 +219,7 @@ bool XBeeArduino::setLoRaAppEUI(const char* value) {
  * @param value A pointer to a buffer where the App Key will be stored.
  * @return True if the App Key is set successfully, otherwise false.
  */
-bool XBeeArduino::setLoRaAppKey(const char* value) {
+bool XBeeArduino::setLoRaWANAppKey(const char* value) {
     if (moduleType_ == XBEE_LORA) {
         return XBeeLRSetAppKey(xbee_, value);
     }
@@ -231,7 +231,7 @@ bool XBeeArduino::setLoRaAppKey(const char* value) {
  * @param value A pointer to a buffer where the App Key will be stored.
  * @return True if the App Key is set successfully, otherwise false.
  */
-bool XBeeArduino::setLoRaNwkKey(const char* value) {
+bool XBeeArduino::setLoRaWANNwkKey(const char* value) {
     if (moduleType_ == XBEE_LORA) {
         return XBeeLRSetNwkKey(xbee_, value);
     }
@@ -243,9 +243,248 @@ bool XBeeArduino::setLoRaNwkKey(const char* value) {
  * @param devEUI A pointer to a buffer where the DevEUI will be stored.
  * @return True if the DevEUI is retrieved successfully, otherwise false.
  */
-bool XBeeArduino::getLoRaDevEUI(uint8_t* devEUI, uint8_t length) {
+bool XBeeArduino::getLoRaWANDevEUI(uint8_t* devEUI, uint8_t length) {
     if (moduleType_ == XBEE_LORA) {
         return XBeeLRGetDevEUI(xbee_, devEUI, length);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Class on the XBee LR module.
+ * 
+ * This function sends the AT_LC command to set the LoRaWAN Class 
+ * (e.g., 'A', 'B', 'C') on the XBee LR module.
+ * 
+ * @param[in] value The LoRaWAN Class to be set ('A', 'B', or 'C').
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANClass(const char value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetClass(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Activation Mode on the XBee LR module.
+ * 
+ * This function sends the AT_AM command to set the Activation Mode 
+ * (e.g., OTAA or ABP) on the XBee LR module.
+ * 
+ * @param[in] value The Activation Mode to be set.
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANActivationMode(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetActivationMode(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Adaptive Data Rate (ADR) on the XBee LR module.
+ * 
+ * This function sends the AT_AD command to enable or disable the 
+ * Adaptive Data Rate (ADR) feature on the XBee LR module.
+ * 
+ * @param[in] value The ADR setting to be set (e.g., 0 for disable, 1 for enable).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANADR(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetADR(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Data Rate on the XBee LR module.
+ * 
+ * This function sends the AT_DR command to set the Data Rate 
+ * on the XBee LR module.
+ * 
+ * @param[in] value The Data Rate to be set.
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANDataRate(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetDataRate(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Region on the XBee LR module.
+ * 
+ * This function sends the AT_LR command to set the operational region 
+ * (e.g., US915, EU868) on the XBee LR module.
+ * 
+ * @param[in] value The Region to be set.
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANRegion(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetRegion(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Duty Cycle on the XBee LR module.
+ * 
+ * This function sends the AT_DC command to configure the duty cycle 
+ * settings on the XBee LR module.
+ * 
+ * @param[in] value The Duty Cycle to be set.
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANDutyCycle(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetDutyCycle(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to get the LoRaWAN Specification Version from the XBee LR module.
+ * 
+ * This function sends the AT_LV command to retrieve the LoRaWAN 
+ * Specification Version currently in use by the XBee LR module.
+ * 
+ * @param[out] responseBuffer Buffer to store the retrieved version string.
+ * @param[in] buffer_size The size of the response buffer.
+ * 
+ * @return bool Returns true if the command was successfully sent and a valid response was received, otherwise false.
+ */
+bool XBeeArduino::getLoRaWANSpecVersion(char* responseBuffer, uint8_t buffer_size) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRGetSpecVersion(xbee_, responseBuffer, buffer_size);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Join RX1 Delay on the XBee LR module.
+ * 
+ * This function sends the AT_J1 command to set the RX1 delay 
+ * (in milliseconds) for the Join Accept message on the XBee LR module.
+ * 
+ * @param[in] value The RX1 Delay value to be set (in milliseconds).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANJoinRX1Delay(const uint32_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetJoinRX1Delay(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Join RX2 Delay on the XBee LR module.
+ * 
+ * This function sends the AT_J2 command to set the RX2 delay 
+ * (in milliseconds) for the Join Accept message on the XBee LR module.
+ * 
+ * @param[in] value The RX2 Delay value to be set (in milliseconds).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANJoinRX2Delay(const uint32_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetJoinRX2Delay(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN RX1 Delay on the XBee LR module.
+ * 
+ * This function sends the AT_D1 command to set the RX1 delay 
+ * (in milliseconds) on the XBee LR module.
+ * 
+ * @param[in] value The RX1 Delay value to be set (in milliseconds).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANRX1Delay(const uint32_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetRX1Delay(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN RX2 Delay on the XBee LR module.
+ * 
+ * This function sends the AT_D2 command to set the RX2 delay 
+ * (in milliseconds) on the XBee LR module.
+ * 
+ * @param[in] value The RX2 Delay value to be set (in milliseconds).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANRX2Delay(const uint32_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetRX2Delay(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN RX2 Data Rate on the XBee LR module.
+ * 
+ * This function sends the AT_XD command to set the RX2 Data Rate 
+ * on the XBee LR module.
+ * 
+ * @param[in] value The RX2 Data Rate to be set.
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANRX2DataRate(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetRX2DataRate(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN RX2 Frequency on the XBee LR module.
+ * 
+ * This function sends the AT_XF command to set the RX2 Frequency 
+ * on the XBee LR module.
+ * 
+ * @param[in] value The RX2 Frequency to be set (in Hz).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANRX2Frequency(const uint32_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetRX2Frequency(xbee_, value);
+    }
+    return false;
+}
+
+/**
+ * @brief Wrapper function to set the LoRaWAN Transmit Power on the XBee LR module.
+ * 
+ * This function sends the AT_PO command to set the transmit power 
+ * level on the XBee LR module.
+ * 
+ * @param[in] value The Transmit Power value to be set (in dBm).
+ * 
+ * @return bool Returns true if the command was successfully sent and the response was positive, otherwise false.
+ */
+bool XBeeArduino::setLoRaWANTransmitPower(const uint8_t value) {
+    if (moduleType_ == XBEE_LORA) {
+        return XBeeLRSetTransmitPower(xbee_, value);
     }
     return false;
 }
