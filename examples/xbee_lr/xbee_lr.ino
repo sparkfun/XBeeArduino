@@ -125,6 +125,8 @@ void setup() {
     serialPort = &Serial1;
 
     delay(6000);
+    Serial.println("");
+    Serial.println("----------------------------------------------------------------------");
     Serial.println("XBee LR Example App");
 
     // Initialize the XBee module
@@ -136,7 +138,18 @@ void setup() {
 
     // Read LoRaWAN DevEUI and print
     uint8_t devEui[17];
-    if (xbee->getLoRaWANDevEUI(devEui,sizeof(devEui))){
+
+    // This might take a few trys ... 
+    bool status = false; 
+    for(int i = 0; i < 3; i++){
+        if (xbee->getLoRaWANDevEUI(devEui,sizeof(devEui))){
+            status = true;
+            break;
+        }
+        delay(100);
+    }
+    // if (xbee->getLoRaWANDevEUI(devEui,sizeof(devEui))){
+    if (status){
       Serial.print("DEVEUI: ");
       Serial.print((char*)devEui);
     Serial.println();

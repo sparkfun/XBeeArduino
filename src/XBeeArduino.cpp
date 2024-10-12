@@ -134,7 +134,7 @@ bool XBeeArduino::sendData(const T& data) {
     if (moduleType_ == XBEE_LORA) {
         return XBeeSendData(xbee_, &data) == 0;
     }
-    //return false;
+    return false;
 }
 
 // Explicit template instantiation for XBeeLRPacket_s
