@@ -477,7 +477,7 @@ bool XBeeLRSetJoinRX1Delay(XBee* self, const uint32_t value) {
     uint8_t responseLength;
     uint8_t paramLength = sizeof(value);
 
-    int status = apiSendAtCommandAndGetResponse(self, AT_J1, &value, paramLength, response, &responseLength, 5000);
+    int status = apiSendAtCommandAndGetResponse(self, AT_J1, (const uint8_t*)&value, paramLength, response, &responseLength, 5000);
 
     if (status != API_SEND_SUCCESS) {
         XBEEDebugPrintEnabled("Failed to set Join RX1 Delay\n");
@@ -500,7 +500,7 @@ bool XBeeLRSetJoinRX2Delay(XBee* self, const uint32_t value) {
     uint8_t responseLength;
     uint8_t paramLength = sizeof(value);
 
-    int status = apiSendAtCommandAndGetResponse(self, AT_J2, &value, paramLength, response, &responseLength, 5000);
+    int status = apiSendAtCommandAndGetResponse(self, AT_J2, (const uint8_t*)&value, paramLength, response, &responseLength, 5000);
 
     if (status != API_SEND_SUCCESS) {
         XBEEDebugPrintEnabled("Failed to set Join RX2 Delay\n");
@@ -523,7 +523,7 @@ bool XBeeLRSetRX1Delay(XBee* self, const uint32_t value) {
     uint8_t responseLength;
     uint8_t paramLength = sizeof(value);
 
-    int status = apiSendAtCommandAndGetResponse(self, AT_D1, &value, paramLength, response, &responseLength, 5000);
+    int status = apiSendAtCommandAndGetResponse(self, AT_D1, (const uint8_t*)&value, paramLength, response, &responseLength, 5000);
 
     if (status != API_SEND_SUCCESS) {
         XBEEDebugPrintEnabled("Failed to set RX1 Delay\n");
@@ -546,7 +546,7 @@ bool XBeeLRSetRX2Delay(XBee* self, const uint32_t value) {
     uint8_t responseLength;
     uint8_t paramLength = sizeof(value);
 
-    int status = apiSendAtCommandAndGetResponse(self, AT_D2, &value, paramLength, response, &responseLength, 5000);
+    int status = apiSendAtCommandAndGetResponse(self, AT_D2, (const uint8_t*)&value, paramLength, response, &responseLength, 5000);
 
     if (status != API_SEND_SUCCESS) {
         XBEEDebugPrintEnabled("Failed to set RX2 Delay\n");
