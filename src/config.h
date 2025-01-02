@@ -40,7 +40,7 @@ extern "C"
 #include "port.h"
 
 // Constants
-#define UART_READ_TIMEOUT_MS 3000
+#define UART_READ_TIMEOUT_MS 100
 #define UART_WRITE_TIMEOUT_MS 10
 
 #define API_FRAME_DEBUG_PRINT_ENABLED 0

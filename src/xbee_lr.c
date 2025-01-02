@@ -307,7 +307,7 @@ bool XBeeLRSetNwkKey(XBee* self, const char* value) {
         XBEEDebugPrint("Failed to set Nwk Key\n");
         return false;
     }
-    return true;
+    return true; 
 }
 
 /**
