@@ -52,9 +52,9 @@ extern "C"
 
 #define XBEE_DEBUG_PRINT_ENABLED 0
 #if XBEE_DEBUG_PRINT_ENABLED
-#define XBEEDebugPrintEnabled(...) portDebugPrintf(__VA_ARGS__)
+#define XBEEDebugPrint(...) portDebugPrintf(__VA_ARGS__)
 #else
-#define XBEEDebugPrintEnabled(...)
+#define XBEEDebugPrint(...)
 #endif
 
 #if defined(__cplusplus)
